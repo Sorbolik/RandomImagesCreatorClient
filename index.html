@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+
+  <script>
+
+    document.addEventListener('readystatechange', event => {
+
+      // When HTML/DOM elements are ready:
+      if (event.target.readyState === "interactive") {   //does same as:  ..addEventListener("DOMContentLoaded"..
+        console.log("ready state interactive");
+      }
+
+      // When window loaded ( external resources are loaded too- `css`,`src`, etc...) 
+      if (event.target.readyState === "complete") {
+        document.getElementById('form').addEventListener('submit', async function (e) {
+
+          document.querySelector("#overlay").style["display"] = "block";
+          e.preventDefault();
+
+          var formData = new FormData(this);
+
+          const myRequest = new Request('http://localhost:3000/gptImages', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+              // 'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: JSON.stringify({
+              prompt: formData.get('prompt')
+            })
+          });
+
+          fetch(myRequest)
+            .then((response) => response.json())
+            .then((myBlob) => {
+              document.querySelector("#overlay").style["display"] = "none";
+              document.querySelector("#image-slot-img").src = myBlob.imageUrl;
+            });
+
+        });
+      }
+    });
+
+  </script>
+  <title>Generatore di immagini</title>
+</head>
+
+<body>
+
+  <div class="container mt-5">
+    <div class="row">
+      <div class="col-md-12 text-center">
+        <h1>Generatore di immagini</h1>
+        <style>
+          form {
+            width: 500px;
+            margin: 0 auto;
+            text-align: center;
+          }
+
+          input[type="text"] {
+            width: 60%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            box-sizing: border-box;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+          }
+
+          input[type="submit"] {
+            width: 20%;
+            background-color: #4CAF50;
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+          }
+
+          input[type="submit"]:hover {
+            background-color: #45a049;
+          }
+
+
+          #image-slot {
+            width: 500px;
+            height: 300px;
+            border: 2px solid #ccc;
+          }
+
+          .asdddd {
+            height: 470px !important;
+          }
+
+          /* Stile per l'overlay */
+          #overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+          }
+
+          /* Stile per lo spinner */
+          #spinner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            border: 8px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 8px solid #3498db;
+            animation: spin 2s linear infinite;
+          }
+
+          @keyframes spin {
+            0% {
+              transform: rotate(0deg);
+            }
+
+            100% {
+              transform: rotate(360deg);
+            }
+          }
+        </style>
+
+        <form id="form">
+          <label for="prompt">Inserisci il tuo prompt:</label><br>
+          <input type="text" id="prompt" name="prompt"><br>
+          <input type="submit" value="Invia">
+        </form>
+
+        <div class="row">
+          <div class="col text-center">
+            <div id="overlay">
+              <div id="spinner"></div>
+            </div>
+
+            <div id="image-slot text-center">
+              <img id="image-slot-img" class="img-fluid asdddd" alt="">
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  </div>
+</body>
+
+</html>
